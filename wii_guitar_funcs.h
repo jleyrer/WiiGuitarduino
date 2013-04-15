@@ -19,19 +19,19 @@ static uint8_t guitar_buf[6];   // array to store guitar data,
 // and tell the guitar we're talking to it
 static void guitar_init()
 { 
-    Wire.begin();                // join i2c bus as master
-    Wire.beginTransmission(0x52);// transmit to device 0x52
-    Wire.send(0x40);// sends memory address
-    Wire.send(0x00);// sends sent a zero.  
-    Wire.endTransmission();// stop transmitting
+    Wire.begin();                  // join i2c bus as master
+    Wire.beginTransmission(0x52);  // transmit to device 0x52
+    Wire.send(0x40);		   // sends memory address
+    Wire.send(0x00);                 
+    Wire.endTransmission();        // stop transmitting
 }
 
 // Send a request for data to the guitar
 static void guitar_send_request()
 {
-    Wire.beginTransmission(0x52);// transmit to device 0x52
-    Wire.send(0x00);// sends one byte
-    Wire.endTransmission();// stop transmitting
+    Wire.beginTransmission(0x52);  // transmit to device 0x52
+    Wire.send(0x00);		   // sends one byte
+    Wire.endTransmission();	   // stop transmitting
 }
 
 // Encode data to format that most wiimote drivers except
@@ -47,18 +47,18 @@ static char guitar_decode_byte (char x)
 static int guitar_get_data()
 {
     int cnt=0;
-    Wire.requestFrom (0x52, 6);// request data from nunchuck
+    Wire.requestFrom (0x52, 6);  // request data from nunchuck
     while (Wire.available ()) {
         // receive byte as an integer
         guitar_buf[cnt] = guitar_decode_byte(Wire.receive());
         cnt++;
     }
-    guitar_send_request();  // send request for next data payload
+    guitar_send_request();      // send request for next data payload
     // If we recieved the 6 bytes, then go print them
     if (cnt >= 5) {
-        return 1;   // success
+        return 1;   		// success
     }
-    return 0; //failure
+    return 0; 			//failure
 }
 
 // Print the input data we have recieved
@@ -67,7 +67,9 @@ static void guitar_print_data()
     static int i=0;
     int joy_x_axis = guitar_buf[0];
     int joy_y_axis = guitar_buf[1];
+
     // guitar_buf[2] isn't used, as far as I can tell
+    
     int whammy_bar = guitar_buf[3]; // only least significant four bits are used
     
     // The rest of the bytes are shared by the guitar's buttons
@@ -191,6 +193,7 @@ static int guitar_strum_down()
 {
     return ((guitar_buf[4] >> 6) & 1) ? 0 : 1;
 }
+
 // returns upward strum state (pushing up on the strum bar): 1=pressed, 0=notpressed
 static int guitar_strum_up()
 {
@@ -206,6 +209,7 @@ static int guitar_minus_button()
 {
     return ((guitar_buf[4] >> 4) & 1) ? 0 : 1;
 }
+
 // returns plus (+) button state: 1=pressed, 0=notpressed
 static int guitar_plus_button()
 {
